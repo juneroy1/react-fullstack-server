@@ -10,6 +10,22 @@ export const getPosts = async (req, res) => {
         res.status(404).json({ message: error.message});
     }   
 }
+// query = /pody ?page=1
+// params = body/:id
+export const getPostsBySearch = async (req, res) => {
+    const {searchQuery, tags} = req.query;
+    try {
+        const title = new RegExp(searchQuery, 'i');
+        const posts = await PostMessage.find({
+            $or: [{ title }, {tags: {$in: tags.split(',')}}]
+        });
+
+        res.json({data: posts});
+    } catch (error) {
+        res.status(404).json({message:error.message})
+        console.log(error)
+    }
+}
 
 export const createPost = async (req, res) => {
     const post = req.body;
